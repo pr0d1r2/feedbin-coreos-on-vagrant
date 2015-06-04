@@ -66,7 +66,10 @@ if [ ! -f vagrant_up.done ]; then
   touch vagrant_up.done || exit $?
 fi
 
-
+for PACKAGE in redis fnkr/feedbin
+do
+  vagrant ssh feedbin-coreos-01 -- -A docker pull $PACKAGE || exit $?
+done
 
 vagrant destroy -f || exit $?
 
