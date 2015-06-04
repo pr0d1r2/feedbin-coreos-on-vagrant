@@ -65,3 +65,10 @@ if [ ! -f vagrant_up.done ]; then
   vagrant status || exit $?
   touch vagrant_up.done || exit $?
 fi
+
+
+
+vagrant destroy -f || exit $?
+
+cd
+rm -rf $TMP || exit $?
