@@ -1,0 +1,20 @@
+[Unit]
+Description=elasticsearch
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+TimeoutStartSec=5
+RestartSec=5
+ExecStartPre=-/usr/bin/docker kill elasticsearch
+ExecStartPre=/usr/bin/docker pull elasticsearch
+ExecStartPre=/bin/sh -c \
+	"docker history elasticsearch:latest >/dev/null || \
+	docker pull elasticsearch:latest"
+
+ExecStart=/usr/bin/docker run elasticsearch
+
+ExecStop=/usr/bin/docker stop elasticsearch
+
+SyslogIdentifier=elasticsearch

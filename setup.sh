@@ -4,6 +4,8 @@ D_R=`cd \`dirname $0\` ; pwd -P`
 
 TMP="/tmp/.feedbin-coreos-on-vagrant-$$"
 
+CURRENT_BRANCH=`git branch | grep "*" | cut -b3-`
+
 if [ ! -d $TMP ]; then
   mkdir -p $TMP
 fi
@@ -66,9 +68,22 @@ if [ ! -f vagrant_up.done ]; then
   touch vagrant_up.done || exit $?
 fi
 
-for PACKAGE in redis fnkr/feedbin
+for PACKAGE in redis postgres elasticsearch fnkr/feedbin
 do
   vagrant ssh feedbin-coreos-01 -- -A docker pull $PACKAGE || exit $?
+done
+
+exit 1
+
+for SERVICE in redis postgres elasticsearch feedbin
+do
+  vagrant ssh feedbin-coreos-01 -- -A \
+    sudo curl https://raw.githubusercontent.com/pr0d1r2/feedbin-coreos-on-vagrant/$CURRENT_BRANCH/$SERVICE.service \
+      -o /etc/systemd/system/$SERVICE.service || exit $?
+  vagrant ssh feedbin-coreos-01 -- -A \
+    sudo systemctl enable /etc/systemd/system/$SERVICE.service || exit $?
+  vagrant ssh feedbin-coreos-01 -- -A \
+    sudo systemctl start $SERVICE.service || exit $?
 done
 
 vagrant destroy -f || exit $?

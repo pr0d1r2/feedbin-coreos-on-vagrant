@@ -1,0 +1,20 @@
+[Unit]
+Description=postgres
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+TimeoutStartSec=5
+RestartSec=5
+ExecStartPre=-/usr/bin/docker kill postgres
+ExecStartPre=/usr/bin/docker pull postgres
+ExecStartPre=/bin/sh -c \
+	"docker history postgres:latest >/dev/null || \
+	docker pull postgres:latest"
+
+ExecStart=/usr/bin/docker run postgres
+
+ExecStop=/usr/bin/docker stop postgres
+
+SyslogIdentifier=postgres

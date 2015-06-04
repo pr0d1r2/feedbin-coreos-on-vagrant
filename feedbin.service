@@ -1,0 +1,20 @@
+[Unit]
+Description=feedbin
+After=docker.service redis.service postgres.service elasticsearch.service
+Requires=docker.service redis.service postgres.service elasticsearch.service
+
+[Service]
+Restart=always
+TimeoutStartSec=5
+RestartSec=5
+ExecStartPre=-/usr/bin/docker kill fnkr/feedbin
+ExecStartPre=/usr/bin/docker pull fnkr/feedbin
+ExecStartPre=/bin/sh -c \
+	"docker history fnkr/feedbin:latest >/dev/null || \
+	docker pull fnkr/feedbin:latest"
+
+ExecStart=/usr/bin/docker run fnkr/feedbin
+
+ExecStop=/usr/bin/docker stop fnkr/feedbin
+
+SyslogIdentifier=feedbin
