@@ -8,7 +8,6 @@ Restart=always
 TimeoutStartSec=5
 RestartSec=5
 ExecStartPre=-/usr/bin/docker kill redis
-ExecStartPre=-/usr/bin/docker rm redis
 ExecStartPre=/usr/bin/docker pull redis
 ExecStartPre=/bin/sh -c \
 	"docker history redis:latest >/dev/null || \
